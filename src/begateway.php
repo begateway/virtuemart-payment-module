@@ -1,6 +1,13 @@
 <?php
 defined('_JEXEC') or die;
 
+require_once __DIR__ . '/vendor/autoload.php';
+
+use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseInterface;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\Language\Text;
+
 if (!class_exists('vmPSPlugin')) {
     require(JPATH_VM_PLUGINS . DS . 'vmpsplugin.php');
 }
@@ -16,7 +23,6 @@ class plgVMPaymentBegateway extends vmPSPlugin
         $this->_tableId    = 'id';
         $varsToPush        = $this->getVarsToPush();
         $this->setConfigParameterable($this->_configTableFieldName, $varsToPush);
-        $this->_loadLibrary();
     }
 
     function getVmPluginCreateTableSQL()
@@ -240,7 +246,7 @@ class plgVMPaymentBegateway extends vmPSPlugin
         return $this->OnSelectCheck($cart);
     }
 
-    public function plgVmDisplayListFEPayment(VirtueMartCart $cart, $selected = 0, &$htmlIn)
+    public function plgVmDisplayListFEPayment(VirtueMartCart $cart, int $selected, &$htmlIn)
     {
         return $this->displayListFE($cart, $selected, $htmlIn);
     }
@@ -264,7 +270,7 @@ class plgVMPaymentBegateway extends vmPSPlugin
         return;
     }
 
-    function plgVmOnCheckAutomaticSelectedPayment(VirtueMartCart $cart, array $cart_prices = array(), &$paymentCounter)
+    function plgVmOnCheckAutomaticSelectedPayment(VirtueMartCart $cart, array $cart_prices, &$paymentCounter)
     {
         return $this->onCheckAutomaticSelected($cart, $cart_prices, $paymentCounter);
     }
@@ -370,10 +376,6 @@ class plgVMPaymentBegateway extends vmPSPlugin
       $this->handlePaymentUserCancel($virtuemart_order_id);
 
       return true;
-    }
-
-    private function _loadLibrary() {
-      require JPATH_SITE . DS . 'plugins' . DS . 'vmpayment' . DS . 'begateway' . DS . 'begateway-api-php' . DS . 'lib' . DS . 'BeGateway.php';
     }
 
     public function getVarsToPush() {
