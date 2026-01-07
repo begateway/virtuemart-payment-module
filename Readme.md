@@ -60,6 +60,12 @@ Use the following test card to make failed test payment:
   * Card expiry date: 01/30
   * CVC: 123
 
+## Install sample data
+
+In VM Configuration set Enable database Update tools to yes. Make sure you save.
+
+Go to Tools / Tools & Migration. Hit the "Reset all tables and install sample data" button.
+
 ## Contributing
 
 Issue pull requests or send feature requests or open [a new issue](https://github.com/begateway/virtuemart-payment-module/issues/new)

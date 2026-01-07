@@ -109,7 +109,7 @@ class plgVMPaymentBegateway extends vmPSPlugin
         }
 
         $notification_url = JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginnotification&tmpl=component');
-        $notification_url = str_replace('carts.local','webhook.begateway.com:8443', $notification_url);
+        $notification_url = str_replace('0.0.0.0:8080','webhook.begateway.com:8443', $notification_url);
 
         $transaction->setNotificationUrl($notification_url);
         $transaction->setSuccessUrl(JROUTE::_(JURI::root() . 'index.php?option=com_virtuemart&view=pluginresponse&task=pluginresponsereceived&on=' . $order['details']['BT']->order_number . '&pm=' . $order['details']['BT']->virtuemart_paymentmethod_id));

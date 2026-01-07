@@ -3,24 +3,21 @@ set -e
 
 echo "--- Start Entrypoint ---"
 
-# 1. КОПИРОВАНИЕ ФАЙЛОВ
-# Проверяем наличие папки components как признак того, что файлы ядра есть
+# 1. Copy files
 if [ ! -d "/var/www/html/components" ]; then
     echo "Joomla core files missing. Copying from source..."
     cp -rp /usr/src/joomla/. /var/www/html/
     echo "Files copied."
 else
-    # Если ядро есть, но нет папки установки и конфига — восстанавливаем installation
     if [ ! -f "/var/www/html/configuration.php" ] && [ ! -d "/var/www/html/installation" ]; then
         echo "Restoring installation folder..."
         cp -rp /usr/src/joomla/installation /var/www/html/
     fi
 fi
 
-# Чиним права
 chown -R www-data:www-data /var/www/html
 
-# 2. ОЖИДАНИЕ БАЗЫ
+# 2. Wait for DB
 echo "Waiting for Database connection to $DB_HOST..."
 max_tries=30
 counter=0
@@ -36,7 +33,7 @@ while ! mysql -h"$DB_HOST" -u"$DB_USER" -p"$DB_PASSWORD" --skip-ssl -e "SELECT 1
 done
 echo "Database connection established!"
 
-# 3. ПОИСК СКРИПТА КОНСОЛИ (Самая важная часть)
+# 3. Search for CLI script (The most important part)
 CLI_SCRIPT=""
 
 if [ -f "./joomla" ]; then
@@ -57,11 +54,10 @@ elif [ -f "./installation/joomla.php" ]; then
     echo "Found INSTALL CLI script at: ./installation/joomla.php"
 fi
 
-# 4. УСТАНОВКА JOOMLA
+# 4. INSTALL JOOMLA
 if [ ! -f "/var/www/html/configuration.php" ]; then
     echo "Installing Joomla via CLI..."
     
-    # Если скрипт не найден, выводим отладку и падаем
     if [ -z "$CLI_SCRIPT" ]; then
         echo "CRITICAL ERROR: Could not find 'joomla' (root) or 'cli/joomla.php'!"
         echo "--- Debug: Content of 'cli' directory ---"
@@ -70,7 +66,6 @@ if [ ! -f "/var/www/html/configuration.php" ]; then
         exit 1
     fi
 
-    # Если скрипт не найден, выводим отладку и падаем
     if [ -z "$INSTALL_CLI_SCRIPT" ]; then
         echo "CRITICAL ERROR: Could not find 'joomla' (root) or 'installation/joomla.php'!"
         echo "--- Debug: Content of 'installation' directory ---"
@@ -79,7 +74,6 @@ if [ ! -f "/var/www/html/configuration.php" ]; then
         exit 1
     fi
 
-    # Запуск установки
     php "$INSTALL_CLI_SCRIPT" install \
         --db-type="mysqli" \
         --db-host="$DB_HOST" \
@@ -96,7 +90,6 @@ if [ ! -f "/var/www/html/configuration.php" ]; then
 
     echo "Joomla installed successfully."
 
-    # !!! ГЛАВНАЯ ПРОВЕРКА !!!
     if [ ! -f "/var/www/html/configuration.php" ]; then
         echo "CRITICAL ERROR: 'configuration.php' was not created after installation attempt!"
         echo "This means the installation failed silently or permission denied."
@@ -105,23 +98,10 @@ if [ ! -f "/var/www/html/configuration.php" ]; then
         echo "SUCCESS: configuration.php created."
     fi
 
-    # 5. УСТАНОВКА VIRTUEMART
+    # 5. Copy VIRTUEMART PACKAGES to tmp folder for manual installation
     VM_PATH="/usr/src/extensions/virtuemart"
-    CORE_PKG=$(find $VM_PATH -name "com_virtuemart*.zip" | grep -v "aio" | head -n 1)
-    AIO_PKG=$(find $VM_PATH -name "com_virtuemart*aio*.zip" | head -n 1)
 
-    # if [ -f "$CORE_PKG" ]; then
-    #     echo "Installing VM Core: $CORE_PKG"
-    #     php "$CLI_SCRIPT" extension:install --path="$CORE_PKG" || echo "VM Core install warning"
-    # fi
-
-    # if [ -f "$AIO_PKG" ]; then
-    #     echo "Installing VM AIO: $AIO_PKG"
-    #     php "$CLI_SCRIPT" extension:install --path="$AIO_PKG" || echo "VM AIO install warning"
-    # fi
-
-    cp $CORE_PKG /var/www/html/tmp/
-    cp $AIO_PKG /var/www/html/tmp/
+    cp $VM_PATH/* /var/www/html/tmp/
 
     # 6. ЗАЧИСТКА
     echo "Removing installation folder..."
