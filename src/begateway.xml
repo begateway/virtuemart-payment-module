@@ -1,32 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension version="3.0" type="plugin" group="vmpayment" method="upgrade">
-	<name>beGateway</name>
+	<name>VM Payment - beGateway</name>
  	<author>eComCharge</author>
-  <creationDate>Dec 18 2016</creationDate>
+    <creationDate>Jan 06 2026</creationDate>
 	<authorEmail>techsupport@ecomcharge.com</authorEmail>
   <license>http://opensource.org/licenses/MIT</license>
-	<version>2.3.2</version>
-	<description>beGateway Payment Plugin</description>
+	<version>3.0.0</version>
+	<description>VM Payment beGateway Payment Plugin</description>
 	<files>
  		<filename plugin="begateway">begateway.php</filename>
-    <folder>begateway-api-php</folder>
+        <folder>vendor</folder>
 	</files>
+
+    <media folder="images" destination="../images/virtuemart/payment">
+        <filename>belkart-system.svg</filename>
+        <filename>epos.svg</filename>
+        <filename>erip.svg</filename>
+        <filename>halva-max.png</filename>
+        <filename>mastercard-system.svg</filename>
+        <filename>mir-system.svg</filename>
+        <filename>visa-system.svg</filename>
+    </media>
+
 	<languages folder="language">
-		<language tag="ru-RU">ru-RU.plg_vmpayment_begateway.ini</language>
-		<language tag="en-GB">en-GB.plg_vmpayment_begateway.ini</language>
+		<language tag="ru-RU">ru-RU/ru-RU.plg_vmpayment_begateway.ini</language>
+		<language tag="en-GB">en-GB/en-GB.plg_vmpayment_begateway.ini</language>
 	</languages>
   <vmconfig>
     <fields name="params">
-      <fieldset name="basic">
+      <fieldset name="payment">
         <field name="ShopId" type="text" label="VMPAYMENT_BEGATEWAY_SHOPID" />
-        <field name="ShopKey" type="text" label="VMPAYMENT_BEGATEWAY_SHOPKEY" size="100"/>
-        <field name="GatewayUrl" type="text" label="VMPAYMENT_BEGATEWAY_GATEWAYURL" size="100" />
-        <field name="PageUrl" type="text" label="VMPAYMENT_BEGATEWAY_PAGEURL" size="100"/>
-        <field name="TransactionType" type="list" default="0" label="VMPAYMENT_BEGATEWAY_TRANSACTIONTYPE">
+        <field name="ShopKey" type="text" label="VMPAYMENT_BEGATEWAY_SHOPKEY" size="50"/>
+        <field name="GatewayUrl" type="text" label="VMPAYMENT_BEGATEWAY_GATEWAYURL" size="50" />
+        <field name="PageUrl" type="text" label="VMPAYMENT_BEGATEWAY_PAGEURL" size="50"/>
+        <field name="TransactionType" type="list" default="payment" label="VMPAYMENT_BEGATEWAY_TRANSACTIONTYPE">
           <option value="payment">VMPAYMENT_BEGATEWAY_TRX_TYPE_PAYMENT</option>
           <option value="authorization">VMPAYMENT_BEGATEWAY_TRX_TYPE_AUTH</option>
         </field>
-        <field name="payment_currency" type="vmacceptedcurrency" default="" label="VMPAYMENT_BEGATEWAY_CURRENCY" description="VMPAYMENT_BEGATEWAY_CURRENCY_DESC" />
+        <field name="payment_currency" type="vmacceptedcurrency" scope="com_virtuemart" default="" label="VMPAYMENT_BEGATEWAY_CURRENCY" description="VMPAYMENT_BEGATEWAY_CURRENCY_DESC" />
         <field name="countries" type="vmcountries"  scope="com_virtuemart" default="" label="VMPAYMENT_BEGATEWAY_COUNTRIES" description="VMPAYMENT_BEGATEWAY_COUNTRIES_DESC"/>
         <field name="min_amount" type="text"  label="VMPAYMENT_BEGATEWAY_MIN_AMOUNT" description="VMPAYMENT_BEGATEWAY_MIN_AMOUNT_EXPLAIN" />
         <field name="max_amount" type="text"  label="VMPAYMENT_BEGATEWAY_MAX_AMOUNT" description="VMPAYMENT_BEGATEWAY_MAX_AMOUNT_EXPLAIN" />
